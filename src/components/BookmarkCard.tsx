@@ -1,15 +1,23 @@
 import { NButton, NCard, NIcon, NSpace, NTag, NTooltip } from 'naive-ui'
-import { defineComponent } from 'vue'
+import { defineComponent, PropType } from 'vue'
 import { Edit, TrashOff } from '@vicons/tabler'
 import { IBookmark } from '../interface'
 
 interface Props {
-  onRemove: (id: number) => void
-  onEdit: (id: number) => void
+  // dataSource: IBookmark
+  // onRemove(id: number): void
+  // onEdit(id: number): void
 }
 
-export default defineComponent<Props>({
+export default defineComponent({
+  // props: ['dataSource'],
+  props: {
+    dataSource: Object,
+  },
+
   setup(props) {
+    console.log(props)
+
     return () => (
       <NCard
         size="small"
@@ -20,8 +28,8 @@ export default defineComponent<Props>({
             <NTooltip
               placement="top-start"
               v-slots={{
-                trigger: () => <span style={{ cursor: 'pointer' }}>谷歌搜索</span>,
-                default: () => '一些网站介绍文字一些网站介绍文字一些网站介绍文字一些网站介绍文字',
+                trigger: () => <span style={{ cursor: 'pointer' }}>{props.dataSource?.name}</span>,
+                default: () => props.dataSource?.description || props.dataSource?.name,
               }}
             />
           ),
@@ -57,9 +65,9 @@ export default defineComponent<Props>({
               style={{ overflow: 'scroll' }}
               itemStyle={{ marginRight: '5px' }}
             >
-              {['tag1', 'tag2', 'tag3', 'tag4', 'tag5'].map((item) => (
-                <NTag round size="small">
-                  {item}
+              {props.dataSource?.tags?.map((tag) => (
+                <NTag round size="small" key={tag.id}>
+                  {tag.name}
                 </NTag>
               ))}
             </NSpace>

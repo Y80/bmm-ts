@@ -4,6 +4,13 @@ export interface ITag {
   bookmarkNum: number
 }
 
+export interface IBaseBookmark {
+  name: string
+  url: string
+  description?: string
+  favicon?: string
+}
+
 export interface IBookmark {
   id: number
   name: string

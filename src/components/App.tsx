@@ -5,7 +5,7 @@ import Index from './Index'
 
 export default defineComponent({
   setup() {
-    // store.dispatch('getAllTags')
+    store.dispatch('getAllTags')
   },
 
   render() {
