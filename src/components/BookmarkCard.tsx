@@ -1,23 +1,25 @@
-import { NButton, NCard, NIcon, NSpace, NTag, NTooltip } from 'naive-ui'
+import { NButton, NCard, NEllipsis, NIcon, NSpace, NTag, NTooltip } from 'naive-ui'
 import { defineComponent, PropType } from 'vue'
 import { Edit, TrashOff } from '@vicons/tabler'
 import { IBookmark } from '../interface'
 
-interface Props {
-  // dataSource: IBookmark
-  // onRemove(id: number): void
-  // onEdit(id: number): void
-}
-
 export default defineComponent({
-  // props: ['dataSource'],
   props: {
-    dataSource: Object,
+    dataSource: {
+      required: true,
+      type: Object as PropType<IBookmark>,
+    },
+    onRemove: {
+      required: true,
+      type: Function as PropType<(bookmark: IBookmark) => void>,
+    },
+    onEdit: {
+      required: true,
+      type: Function as PropType<(bookmark: IBookmark) => void>,
+    },
   },
 
   setup(props) {
-    console.log(props)
-
     return () => (
       <NCard
         size="small"
@@ -28,8 +30,10 @@ export default defineComponent({
             <NTooltip
               placement="top-start"
               v-slots={{
-                trigger: () => <span style={{ cursor: 'pointer' }}>{props.dataSource?.name}</span>,
-                default: () => props.dataSource?.description || props.dataSource?.name,
+                trigger: () => <span style={{ cursor: 'pointer' }}>{props.dataSource.name}</span>,
+                default: () =>
+                  props.dataSource.name +
+                  (props.dataSource.description && `: ${props.dataSource.description}`),
               }}
             />
           ),
@@ -37,6 +41,7 @@ export default defineComponent({
             <NSpace>
               <NButton
                 text
+                onClick={() => props.onEdit(props.dataSource)}
                 v-slots={{
                   icon: () => (
                     <NIcon>
@@ -47,6 +52,7 @@ export default defineComponent({
               />
               <NButton
                 text
+                onClick={() => props.onRemove(props.dataSource)}
                 type="error"
                 v-slots={{
                   icon: () => (
@@ -65,7 +71,7 @@ export default defineComponent({
               style={{ overflow: 'scroll' }}
               itemStyle={{ marginRight: '5px' }}
             >
-              {props.dataSource?.tags?.map((tag) => (
+              {props.dataSource.tags.map((tag) => (
                 <NTag round size="small" key={tag.id}>
                   {tag.name}
                 </NTag>

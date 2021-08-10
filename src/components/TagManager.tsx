@@ -13,13 +13,24 @@ import {
   NSpin,
 } from 'naive-ui'
 import { TableColumn } from 'naive-ui/lib/data-table/src/interface'
-import { defineComponent, reactive, ref } from 'vue'
+import { defineComponent, PropType, reactive, ref } from 'vue'
 import { useStore } from 'vuex'
 import TagAPI from '../api/tag'
 import { ITag } from '../interface'
 
 export default defineComponent({
-  setup() {
+  props: {
+    show: {
+      required: true,
+      type: Boolean,
+    },
+    onClose: {
+      required: true,
+      type: Function as PropType<() => void>,
+    },
+  },
+
+  setup(props) {
     const store = useStore()
     const showSpin = ref(false)
     const formRef = ref<FormInst>(null as unknown as FormInst)
@@ -111,7 +122,12 @@ export default defineComponent({
 
     return () => (
       <>
-        <NDrawer placement="right" width="600">
+        <NDrawer
+          placement="right"
+          width="600"
+          v-model={[props.show, 'show']}
+          onUpdateShow={(value) => !value && props.onClose()}
+        >
           <NDrawerContent title="标签管理" closable>
             <NSpace align="center" justify="space-between" style={{ marginBottom: '.5em' }}>
               <span>当前有 {store.state.tags?.length} 个标签</span>
