@@ -13,7 +13,7 @@ import {
   NSpin,
 } from 'naive-ui'
 import { TableColumn } from 'naive-ui/lib/data-table/src/interface'
-import { defineComponent, PropType, reactive, ref } from 'vue'
+import { defineComponent, PropType, reactive, ref, watch } from 'vue'
 import { useStore } from 'vuex'
 import TagAPI from '../api/tag'
 import { ITag } from '../interface'
@@ -41,7 +41,6 @@ export default defineComponent({
       tagId: 0,
       formModel: { name: '' },
     })
-
     const columns: TableColumn<ITag>[] = [
       {
         title: '标签名称',
@@ -63,11 +62,7 @@ export default defineComponent({
                 }}
                 v-slots={{
                   default: () => `确定要删除标签【${row.name}】吗？`,
-                  trigger: () => (
-                    <NButton text type="error">
-                      删除
-                    </NButton>
-                  ),
+                  trigger: () => <NButton text>删除</NButton>,
                 }}
               />
               <NButton text onClick={() => openModal(row)}>
@@ -85,7 +80,6 @@ export default defineComponent({
         showSpin.value = false
       })
     }
-
     function openModal(data?: ITag) {
       if (data) {
         modal.formModel.name = data.name
@@ -99,7 +93,6 @@ export default defineComponent({
 
       modal.show = true
     }
-
     async function handleSubmit() {
       await formRef.value.validate()
       modal.loading = true
@@ -120,12 +113,19 @@ export default defineComponent({
         })
     }
 
+    watch(
+      () => props.show,
+      (value) => {
+        if (value) refreshTagData()
+      }
+    )
+
     return () => (
       <>
         <NDrawer
           placement="right"
           width="600"
-          v-model={[props.show, 'show']}
+          show={props.show}
           onUpdateShow={(value) => !value && props.onClose()}
         >
           <NDrawerContent title="标签管理" closable>

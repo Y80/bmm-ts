@@ -2,6 +2,7 @@ import { NButton, NCard, NEllipsis, NIcon, NSpace, NTag, NTooltip } from 'naive-
 import { defineComponent, PropType } from 'vue'
 import { Edit, TrashOff } from '@vicons/tabler'
 import { IBookmark } from '../interface'
+import * as styles from '../styles.css'
 
 export default defineComponent({
   props: {
@@ -22,15 +23,18 @@ export default defineComponent({
   setup(props) {
     return () => (
       <NCard
-        size="small"
+        class={styles.bookmarkCard}
         hoverable
-        style={{ width: '230px' }}
         v-slots={{
           header: () => (
             <NTooltip
               placement="top-start"
               v-slots={{
-                trigger: () => <span style={{ cursor: 'pointer' }}>{props.dataSource.name}</span>,
+                trigger: () => (
+                  <span onClick={() => window.open(props.dataSource.url)}>
+                    {props.dataSource.name}
+                  </span>
+                ),
                 default: () =>
                   props.dataSource.name +
                   (props.dataSource.description && `: ${props.dataSource.description}`),
@@ -38,7 +42,7 @@ export default defineComponent({
             />
           ),
           'header-extra': () => (
-            <NSpace>
+            <NSpace size={[5, 0]} align="center">
               <NButton
                 text
                 onClick={() => props.onEdit(props.dataSource)}
@@ -53,7 +57,6 @@ export default defineComponent({
               <NButton
                 text
                 onClick={() => props.onRemove(props.dataSource)}
-                type="error"
                 v-slots={{
                   icon: () => (
                     <NIcon>
@@ -65,14 +68,9 @@ export default defineComponent({
             </NSpace>
           ),
           default: () => (
-            <NSpace
-              size="small"
-              wrap={false}
-              style={{ overflow: 'scroll' }}
-              itemStyle={{ marginRight: '5px' }}
-            >
+            <NSpace size={[5, 0]} wrap={false} class={styles.tagsBox}>
               {props.dataSource.tags.map((tag) => (
-                <NTag round size="small" key={tag.id}>
+                <NTag size="small" key={tag.id}>
                   {tag.name}
                 </NTag>
               ))}

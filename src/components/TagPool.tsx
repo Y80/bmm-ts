@@ -4,7 +4,7 @@ import { Tag, ArrowRight } from '@vicons/tabler'
 import store from '../store'
 
 const style: CSSProperties = {
-  backgroundColor: '#eee',
+  backgroundColor: 'hsl(210, 100%, 97%)',
   borderRadius: '8px',
   margin: '1rem 0',
   padding: '1rem 0.5rem',
@@ -40,7 +40,7 @@ export default defineComponent({
               onClick={props.onMangerClick}
             >
               {{
-                default: '管理标签',
+                default: () => '管理标签',
                 icon: () => (
                   <NIcon size="16">
                     <ArrowRight></ArrowRight>

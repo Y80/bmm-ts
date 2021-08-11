@@ -9,6 +9,7 @@ import {
   useMessage,
   useDialog,
   NSpin,
+  NEmpty,
 } from 'naive-ui'
 import TagManager from './TagManager'
 import TagPool from './TagPool'
@@ -63,10 +64,15 @@ export default defineComponent({
 
     return () => (
       <>
-        <TagManager show={showTagManger.value} onClose={() => (showTagManger.value = false)} />
+        <TagManager
+          show={showTagManger.value}
+          onClose={() => {
+            showTagManger.value = false
+            getBookmarks()
+          }}
+        />
         <TagPool onMangerClick={() => (showTagManger.value = true)} onTagClick={getBookmarks} />
-
-        <NSpace>
+        <NSpace style={{ margin: '1em 0' }}>
           <NButton type="primary" onClick={() => openBookmarkModal()}>
             添加书签
           </NButton>
@@ -82,6 +88,11 @@ export default defineComponent({
               />
             ))}
           </NSpace>
+          <NEmpty
+            v-show={!bookmarks.value.length && !loadingBookmarks.value}
+            style={{ marginTop: '5em' }}
+            description="没有获取到书签数据"
+          />
         </NSpin>
         <BookmarkModal
           show={bookmarkModal.show}
