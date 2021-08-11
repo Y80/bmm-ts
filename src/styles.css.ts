@@ -9,7 +9,7 @@ globalStyle(`${bookmarkCard} .n-card-header`, {
 })
 globalStyle(`${bookmarkCard} .n-card-header .n-card-header__main`, {
   fontWeight: 'normal',
-  fontSize: '1rem',
+  fontSize: '.9rem',
   cursor: 'pointer',
   display: 'block',
   marginRight: '0.6em',
