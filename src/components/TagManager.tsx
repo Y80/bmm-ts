@@ -1,3 +1,4 @@
+import { Plus } from '@vicons/tabler'
 import {
   NDataTable,
   NButton,
@@ -11,6 +12,7 @@ import {
   NDrawerContent,
   FormInst,
   NSpin,
+  NIcon,
 } from 'naive-ui'
 import { TableColumn } from 'naive-ui/lib/data-table/src/interface'
 import { defineComponent, PropType, reactive, ref, watch } from 'vue'
@@ -132,7 +134,14 @@ export default defineComponent({
             <NSpace align="center" justify="space-between" style={{ marginBottom: '.5em' }}>
               <span>当前有 {store.state.tags?.length} 个标签</span>
               <NButton type="primary" onClick={() => openModal()}>
-                添加
+                {{
+                  default: () => '添加标签',
+                  icon: () => (
+                    <NIcon>
+                      <Plus />
+                    </NIcon>
+                  ),
+                }}
               </NButton>
             </NSpace>
             <NSpin show={showSpin.value}>

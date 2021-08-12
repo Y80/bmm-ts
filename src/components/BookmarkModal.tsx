@@ -1,8 +1,19 @@
-import { FormInst, FormRules, NForm, NFormItem, NInput, NModal, NSpace, NTag } from 'naive-ui'
+import {
+  FormInst,
+  FormRules,
+  NForm,
+  NFormItem,
+  NIcon,
+  NInput,
+  NModal,
+  NSpace,
+  NTag,
+} from 'naive-ui'
 import { defineComponent, ref, reactive, watch, PropType } from 'vue'
 import { IBookmark, ITag } from '../interface'
 import store from '../store'
 import BookmarkAPI from '../api/bookmark'
+import { Bookmarks } from '@vicons/tabler'
 
 const formRules: FormRules = {
   name: { required: true, message: '请输入书签名称', trigger: ['blur', 'input'] },
@@ -102,8 +113,14 @@ export default defineComponent({
         show={props.show}
         preset="dialog"
         positiveText="提交"
+        icon={() => (
+          <NIcon>
+            <Bookmarks />
+          </NIcon>
+        )}
         onPositiveClick={handleSubmit}
         onClose={props.onClose}
+        onMaskClick={props.onClose}
       >
         <NForm
           model={formModel}

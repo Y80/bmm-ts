@@ -1,22 +1,12 @@
-import { defineComponent, reactive, ref } from 'vue'
-import {
-  NButton,
-  NForm,
-  NFormItem,
-  NInput,
-  NModal,
-  NSpace,
-  useMessage,
-  useDialog,
-  NSpin,
-  NEmpty,
-} from 'naive-ui'
+import { defineComponent, reactive, ref, watch } from 'vue'
+import { NButton, NSpace, useMessage, useDialog, NSpin, NEmpty, NIcon } from 'naive-ui'
 import TagManager from './TagManager'
 import TagPool from './TagPool'
 import BookmarkCard from './BookmarkCard'
 import BookmarkModal from './BookmarkModal'
 import { IBookmark } from '../interface'
 import BookmarkAPI from '../api/bookmark'
+import { Plus } from '@vicons/tabler'
 
 export default defineComponent({
   setup() {
@@ -30,10 +20,11 @@ export default defineComponent({
       dataSource: undefined,
     })
     const loadingBookmarks = ref(false)
+    const currentTagId = ref<number>()
 
-    function getBookmarks(tagId?: number) {
+    function getBookmarks() {
       loadingBookmarks.value = true
-      BookmarkAPI.query(tagId)
+      BookmarkAPI.query(currentTagId.value)
         .then((data) => {
           bookmarks.value = data
         })
@@ -44,6 +35,7 @@ export default defineComponent({
     getBookmarks()
     function handleRemoveBookmark(bookmark: IBookmark) {
       const dialog = window.$dialog.warning({
+        title: '删除书签',
         content: `确定要删除书签【${bookmark.name}】吗？`,
         positiveText: '确定',
         onPositiveClick() {
@@ -62,6 +54,8 @@ export default defineComponent({
       bookmarkModal.show = true
     }
 
+    watch(() => currentTagId.value, getBookmarks)
+
     return () => (
       <>
         <TagManager
@@ -71,14 +65,25 @@ export default defineComponent({
             getBookmarks()
           }}
         />
-        <TagPool onMangerClick={() => (showTagManger.value = true)} onTagClick={getBookmarks} />
+        <TagPool
+          currentTagId={currentTagId.value}
+          onManagerClick={() => (showTagManger.value = true)}
+          onTagClick={(tagId) => (currentTagId.value = tagId)}
+        />
         <NSpace style={{ margin: '1em 0' }}>
           <NButton type="primary" onClick={() => openBookmarkModal()}>
-            添加书签
+            {{
+              default: () => '添加书签',
+              icon: () => (
+                <NIcon>
+                  <Plus />
+                </NIcon>
+              ),
+            }}
           </NButton>
         </NSpace>
         <NSpin show={loadingBookmarks.value} style={{ minHeight: '50px' }}>
-          <NSpace>
+          <NSpace size={[12, 20]}>
             {bookmarks.value.map((bookmark) => (
               <BookmarkCard
                 key={bookmark.id}

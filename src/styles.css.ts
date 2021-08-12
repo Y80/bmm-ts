@@ -22,11 +22,7 @@ globalStyle(`${bookmarkCard} .n-card-header__extra .n-space > div`, {
 })
 globalStyle(`${bookmarkCard} .n-card__content`, {
   padding: '0 15px 3px 15px',
-})
-globalStyle(`${bookmarkCard} .n-card__content .n-tag`, {
-  padding: '0 5px',
-  height: '18px',
-  lineHeight: '18px',
+  fontWeight: 200,
 })
 
 export const tagsBox = style({
