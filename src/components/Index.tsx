@@ -15,9 +15,9 @@ export default defineComponent({
 
     const showTagManger = ref(false)
     const bookmarks = ref<IBookmark[]>([])
-    const bookmarkModal = reactive<{ show: boolean; dataSource?: IBookmark }>({
+    const bookmarkModal = reactive<{ show: boolean; dataSource: IBookmark | null }>({
       show: false,
-      dataSource: undefined,
+      dataSource: null,
     })
     const loadingBookmarks = ref(false)
     const currentTagId = ref<number>()
@@ -50,7 +50,7 @@ export default defineComponent({
       })
     }
     function openBookmarkModal(dataSource?: IBookmark) {
-      bookmarkModal.dataSource = dataSource
+      bookmarkModal.dataSource = dataSource || null
       bookmarkModal.show = true
     }
 
@@ -83,7 +83,7 @@ export default defineComponent({
           </NButton>
         </NSpace>
         <NSpin show={loadingBookmarks.value} style={{ minHeight: '50px' }}>
-          <NSpace size={[12, 20]}>
+          <NSpace size={[25, 50]}>
             {bookmarks.value.map((bookmark) => (
               <BookmarkCard
                 key={bookmark.id}

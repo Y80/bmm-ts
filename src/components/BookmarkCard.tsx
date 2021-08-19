@@ -1,5 +1,5 @@
-import { NButton, NCard, NConfigProvider, NEllipsis, NIcon, NSpace, NTag, NTooltip } from 'naive-ui'
-import { defineComponent, PropType } from 'vue'
+import { NButton, NCard, NConfigProvider, NIcon, NSpace, NTag, NTooltip } from 'naive-ui'
+import { defineComponent, PropType, ref, watch } from 'vue'
 import { Edit, TrashOff, Plus } from '@vicons/tabler'
 import { IBookmark } from '../interface'
 import * as styles from '../styles.css'
@@ -21,6 +21,16 @@ export default defineComponent({
   },
 
   setup(props) {
+    const imgSrc = ref('')
+
+    watch(
+      () => props.dataSource.favicon,
+      (value) => {
+        imgSrc.value = value || 'http://cdn.gu13.cn/favicon/default.svg'
+      },
+      { immediate: true }
+    )
+
     return () => (
       <NConfigProvider
         themeOverrides={{
@@ -33,23 +43,32 @@ export default defineComponent({
           hoverable
           v-slots={{
             header: () => (
-              <NTooltip
-                placement="top-start"
-                displayDirective="if"
-                v-slots={{
-                  trigger: () => (
-                    <span onClick={() => window.open(props.dataSource.url)}>
-                      {props.dataSource.name}
-                    </span>
-                  ),
-                  default: () =>
-                    props.dataSource.name +
-                    (props.dataSource.description && `: ${props.dataSource.description}`),
-                }}
-              />
+              <>
+                <img
+                  style={{ display: 'block', borderRadius: '2px' }}
+                  src={imgSrc.value}
+                  alt="favicon"
+                  width={20}
+                  onError={() => (imgSrc.value = 'http://cdn.gu13.cn/favicon/img_fail.svg')}
+                />
+                <NTooltip
+                  placement="top-start"
+                  displayDirective="if"
+                  v-slots={{
+                    trigger: () => (
+                      <span onClick={() => window.open(props.dataSource.url)}>
+                        {props.dataSource.name}
+                      </span>
+                    ),
+                    default: () =>
+                      props.dataSource.name +
+                      (props.dataSource.description && `: ${props.dataSource.description}`),
+                  }}
+                />
+              </>
             ),
             'header-extra': () => (
-              <NSpace size={[5, 0]} align="center">
+              <NSpace size={[5, 0]} align="center" wrap={false}>
                 <NButton
                   text
                   onClick={() => props.onEdit(props.dataSource)}

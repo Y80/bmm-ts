@@ -27,10 +27,16 @@ export default defineComponent({
             primaryColorHover: '#AB80FF',
             primaryColorPressed: '#7537EE',
             primaryColorSuppl: '#B995FF',
+            textColor1: '#1F2225FF',
+            textColor2: '#333639FF',
+            textColor3: '#9EA4AAFF',
           },
-
+          Layout: {
+            color: '#f8f8f8',
+          },
           Card: {
             borderRadius: '8px',
+            borderColor: 'none',
           },
           Dialog: {
             borderRadius: '8px',
@@ -52,10 +58,10 @@ export default defineComponent({
             <NLayout>
               <NLayoutContent
                 contentStyle={{
-                  padding: '1rem',
-                  maxWidth: '1000px',
+                  padding: '10px',
+                  maxWidth: '1295px',
+                  overflow: 'hidden',
                   margin: '0 auto',
-                  backgroundImage: 'linear-gradient(180deg, white 30%,#eee8f5, white 30%)',
                 }}
               >
                 <Index />
