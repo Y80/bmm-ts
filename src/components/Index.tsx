@@ -34,7 +34,7 @@ export default defineComponent({
     }
     getBookmarks()
     function handleRemoveBookmark(bookmark: IBookmark) {
-      const dialog = window.$dialog.warning({
+      const dialog = window.$dialog.create({
         title: '删除书签',
         content: `确定要删除书签【${bookmark.name}】吗？`,
         positiveText: '确定',

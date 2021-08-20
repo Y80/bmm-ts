@@ -1,5 +1,5 @@
 import { NButton, NCard, NConfigProvider, NIcon, NSpace, NTag, NTooltip } from 'naive-ui'
-import { defineComponent, PropType, ref, watch } from 'vue'
+import { defineComponent, PropType, ref, watchEffect } from 'vue'
 import { Edit, TrashOff, Plus } from '@vicons/tabler'
 import { IBookmark } from '../interface'
 import * as styles from '../styles.css'
@@ -23,13 +23,9 @@ export default defineComponent({
   setup(props) {
     const imgSrc = ref('')
 
-    watch(
-      () => props.dataSource.favicon,
-      (value) => {
-        imgSrc.value = value || 'http://cdn.gu13.cn/favicon/default.svg'
-      },
-      { immediate: true }
-    )
+    watchEffect(() => {
+      imgSrc.value = props.dataSource.favicon || 'http://cdn.gu13.cn/favicon/default.svg'
+    })
 
     return () => (
       <NConfigProvider

@@ -181,6 +181,11 @@ export default defineComponent({
             <NInput v-model={[formModel.name, 'value']} />
           </NFormItem>
           <NFormItem label="图标" path="favicon">
+            {/* <NTabs>
+              <NTabPane name="自动获取">自动获取</NTabPane>
+              <NTabPane name="手动上传">手动上传</NTabPane>
+              <NTabPane name="手动输入">手动输入</NTabPane>
+            </NTabs> */}
             <NSpace align="center">
               {{
                 default() {
