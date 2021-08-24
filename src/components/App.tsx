@@ -58,7 +58,7 @@ export default defineComponent({
             <NLayout>
               <NLayoutContent
                 contentStyle={{
-                  padding: '10px',
+                  padding: '10vh 10px 50px 10px',
                   maxWidth: '1295px',
                   overflow: 'hidden',
                   margin: '0 auto',

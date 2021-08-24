@@ -4,12 +4,14 @@ import { ITag } from '../interface'
 
 interface State {
   tags: ITag[]
+  isMobile: boolean
 }
 
-export default createStore<State>({
+const store = createStore<State>({
   state() {
     return {
       tags: [],
+      isMobile: window.innerWidth < 768,
     }
   },
 
@@ -18,6 +20,10 @@ export default createStore<State>({
   mutations: {
     setTags(state, payload) {
       state.tags = payload
+    },
+
+    setIsMobile(state, payload) {
+      state.isMobile = payload
     },
   },
 
@@ -30,4 +36,10 @@ export default createStore<State>({
   },
 
   modules: {},
+})
+
+export default store
+
+window.addEventListener('resize', () => {
+  store.commit('setIsMobile', window.innerWidth < 768)
 })

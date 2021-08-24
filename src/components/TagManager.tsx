@@ -126,7 +126,7 @@ export default defineComponent({
       <>
         <NDrawer
           placement="right"
-          width="600"
+          width={store.state.isMobile ? '100%' : 600}
           show={props.show}
           onUpdateShow={(value) => !value && props.onClose()}
         >

@@ -1,4 +1,4 @@
-import { defineComponent, reactive, ref, watch } from 'vue'
+import { computed, CSSProperties, defineComponent, reactive, ref, watch } from 'vue'
 import { NButton, NSpace, useMessage, useDialog, NSpin, NEmpty, NIcon } from 'naive-ui'
 import TagManager from './TagManager'
 import TagPool from './TagPool'
@@ -7,6 +7,9 @@ import BookmarkModal from './BookmarkModal'
 import { IBookmark } from '../interface'
 import BookmarkAPI from '../api/bookmark'
 import { Plus } from '@vicons/tabler'
+import Test from './Test'
+import SearchBox from './SearchBox'
+import store from '../store'
 
 export default defineComponent({
   setup() {
@@ -56,8 +59,26 @@ export default defineComponent({
 
     watch(() => currentTagId.value, getBookmarks)
 
+    const bookmarksContainer = computed(() => {
+      const base: CSSProperties = { display: 'grid' }
+      if (store.state.isMobile) {
+        return {
+          ...base,
+          gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
+          gap: '20px 10px',
+        }
+      }
+      return {
+        ...base,
+        gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))',
+        gap: '30px 50px',
+      }
+    })
+
     return () => (
       <>
+        {/* <Test /> */}
+        <SearchBox />
         <TagManager
           show={showTagManger.value}
           onClose={() => {
@@ -83,7 +104,7 @@ export default defineComponent({
           </NButton>
         </NSpace>
         <NSpin show={loadingBookmarks.value} style={{ minHeight: '50px' }}>
-          <NSpace size={[25, 50]}>
+          <div style={bookmarksContainer.value}>
             {bookmarks.value.map((bookmark) => (
               <BookmarkCard
                 key={bookmark.id}
@@ -92,7 +113,7 @@ export default defineComponent({
                 onRemove={handleRemoveBookmark}
               />
             ))}
-          </NSpace>
+          </div>
           <NEmpty
             v-show={!bookmarks.value.length && !loadingBookmarks.value}
             style={{ marginTop: '5em' }}

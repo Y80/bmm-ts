@@ -6,7 +6,7 @@ import store from '../store'
 const style: CSSProperties = {
   boxShadow: '5px 5px 10px #ebebeb, -5px -5px 10px #ffffff',
   borderRadius: '8px',
-  margin: '1rem 0',
+  margin: '1rem 0 3rem',
   padding: '1rem 0.5rem',
 }
 

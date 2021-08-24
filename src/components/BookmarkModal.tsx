@@ -8,7 +8,10 @@ import {
   NModal,
   NSpace,
   NTag,
+  NTabs,
+  NTabPane,
   NButton,
+  NInputGroup,
 } from 'naive-ui'
 import { defineComponent, ref, reactive, watch, PropType } from 'vue'
 import { IBookmark, ITag } from '../interface'
@@ -16,7 +19,81 @@ import store from '../store'
 import BookmarkAPI from '../api/bookmark'
 import { Bookmarks, Trash } from '@vicons/tabler'
 
-const iconApiPrefixUrl = 'https://get-favicon-zteu24lrsgf7.runkit.sh/'
+const iconApiPrefix = 'https://favicon-finder.aliyun-api.workers.dev/'
+const proxyApiPrefix = 'https://proxy.aliyun-api.workers.dev/?url='
+function IconSetter(props: { favicon: string; url: string; setFavicon(value: string): void }) {
+  const state = reactive({
+    loading: false,
+    inputSrc: '',
+  })
+
+  async function fetchIcon(iconSrc?: string) {
+    let url
+    if (iconSrc) {
+      url = proxyApiPrefix + iconSrc
+    } else {
+      const { host } = new URL(props.url)
+      if (!host) return window.$message.warning('请先输入网址')
+      url = iconApiPrefix + host
+    }
+
+    state.loading = true
+    try {
+      const rsp = await fetch(url)
+      if (rsp.status !== 200) throw new Error()
+
+      const blob = await rsp.blob()
+      await new Promise((resolve, reject) => {
+        const fileReader = new FileReader()
+        fileReader.onload = () => {
+          props.setFavicon(fileReader.result as string)
+          resolve(null)
+        }
+        fileReader.onerror = reject
+        fileReader.readAsDataURL(blob)
+      })
+    } catch (error) {
+      window.$message.error('自动获取图标失败')
+    } finally {
+      state.loading = false
+    }
+  }
+
+  return (
+    <>
+      {props.favicon ? (
+        <NSpace align="center">
+          <img style={{ display: 'block', width: '24px' }} src={props.favicon} />
+          <NButton
+            text
+            type="error"
+            style={{ display: 'block' }}
+            onClick={() => props.setFavicon('')}
+            v-slots={{ icon: () => <Trash /> }}
+          />
+        </NSpace>
+      ) : (
+        <NTabs defaultValue="自动获取">
+          <NTabPane name="自动获取">
+            <NButton loading={state.loading} onClick={() => fetchIcon()} disabled={!props.url}>
+              点击获取
+            </NButton>
+          </NTabPane>
+          <NTabPane name="手动输入">
+            <NInputGroup>
+              <NInput placeholder="请输入图标地址" onChange={(v) => (state.inputSrc = v)} />
+              <NButton loading={state.loading} onClick={() => fetchIcon(state.inputSrc)}>
+                确定
+              </NButton>
+            </NInputGroup>
+          </NTabPane>
+          <NTabPane name="手动上传" disabled></NTabPane>
+        </NTabs>
+      )}
+    </>
+  )
+}
+
 const formRules: FormRules = {
   name: { required: true, message: '请输入书签名称', trigger: ['blur', 'input'] },
   url: { required: true, message: '请输入书签网址', trigger: ['blur', 'input'] },
@@ -46,64 +123,53 @@ export default defineComponent({
     },
     onSuccess: {
       required: true,
-      type: Function,
+      type: Function as PropType<() => any>,
     },
   },
 
   setup(props) {
-    const isEdit = ref(false)
-    const modal = reactive({
-      loading: false,
+    const state = reactive({
+      isEdited: false,
+      isSubmitting: false,
+      tags: [] as Array<ITag & { checked: boolean }>,
     })
     const formRef = ref<FormInst>()
     const formModel = reactive(getFormInitialValues())
-    const tags = ref<Array<ITag & { checked: boolean }>>([])
-    const icon = reactive({
-      loading: false,
-      showSetButtons: true,
-      dataUrl: '',
-    })
 
     watch(
       () => store.state.tags,
       () => {
-        tags.value = store.state.tags.map((tag) => ({ ...tag, checked: false }))
+        state.tags = store.state.tags.map((tag) => ({ ...tag, checked: false }))
       },
       { immediate: true }
     )
     watch(
       () => props.show,
-      (value) => {
-        if (!value) return
+      (show) => {
+        if (!show) return
         // 打开了 modal
         if (props.dataSource) {
-          isEdit.value = true
+          state.isEdited = true
           Object.assign(formModel, props.dataSource)
           const linkedTagIds = props.dataSource.tags.map((tag) => tag.id)
-          tags.value.forEach((tag) => (tag.checked = linkedTagIds.includes(tag.id)))
+          state.tags.forEach((tag) => (tag.checked = linkedTagIds.includes(tag.id)))
         } else {
-          isEdit.value = false
+          state.isEdited = false
           Object.assign(formModel, getFormInitialValues())
-          tags.value.forEach((tag) => (tag.checked = false))
+          state.tags.forEach((tag) => (tag.checked = false))
         }
-        icon.showSetButtons = !formModel.favicon
-        icon.dataUrl = ''
       }
     )
 
     async function handleSubmit() {
       await formRef.value?.validate()
-      modal.loading = true
+      state.isSubmitting = true
       const payload = {
         ...formModel,
-        tagIds: tags.value.filter((tag) => tag.checked).map((tag) => tag.id),
-        b64Favicon: icon.dataUrl,
+        tagIds: state.tags.filter((tag) => tag.checked).map((tag) => tag.id),
       }
-      const promise = isEdit.value
-        ? BookmarkAPI.update({
-            id: props.dataSource?.id!,
-            ...payload,
-          })
+      const promise = state.isEdited
+        ? BookmarkAPI.update(Object.assign(payload, { id: props.dataSource?.id! }))
         : BookmarkAPI.add(payload)
 
       try {
@@ -111,49 +177,14 @@ export default defineComponent({
         props.onClose()
         props.onSuccess()
       } finally {
-        modal.loading = false
+        state.isSubmitting = false
       }
-    }
-
-    async function fetchIcon() {
-      const { host } = new URL(formModel.url)
-      if (!host) return window.$message.warning('请先输入网址')
-
-      icon.loading = true
-      try {
-        const rsp = await fetch(iconApiPrefixUrl + host)
-        if (rsp.status !== 200) throw new Error()
-
-        const blob = await rsp.blob()
-        await new Promise((resolve, reject) => {
-          const fileReader = new FileReader()
-          fileReader.onload = (progressEvent) => {
-            icon.dataUrl = progressEvent.target?.result as string
-            icon.showSetButtons = false
-            resolve(null)
-          }
-          fileReader.onerror = (err) => {
-            reject(err)
-          }
-          fileReader.readAsDataURL(blob)
-        })
-      } catch (error) {
-        window.$message.error('自动获取图标失败')
-      } finally {
-        icon.loading = false
-      }
-    }
-
-    function handleRemoveIcon() {
-      icon.showSetButtons = true
-      formModel.favicon = ''
-      icon.dataUrl = ''
     }
 
     return () => (
       <NModal
-        title={isEdit.value ? '编辑书签' : '添加书签'}
-        loading={modal.loading}
+        title={state.isEdited ? '编辑书签' : '添加书签'}
+        loading={state.isSubmitting}
         show={props.show}
         preset="dialog"
         positiveText="提交"
@@ -181,55 +212,18 @@ export default defineComponent({
             <NInput v-model={[formModel.name, 'value']} />
           </NFormItem>
           <NFormItem label="图标" path="favicon">
-            {/* <NTabs>
-              <NTabPane name="自动获取">自动获取</NTabPane>
-              <NTabPane name="手动上传">手动上传</NTabPane>
-              <NTabPane name="手动输入">手动输入</NTabPane>
-            </NTabs> */}
-            <NSpace align="center">
-              {{
-                default() {
-                  if (icon.showSetButtons) {
-                    return (
-                      <>
-                        <NButton disabled>手动上传</NButton>
-                        <NButton
-                          onClick={fetchIcon}
-                          loading={icon.loading}
-                          disabled={!formModel.url}
-                        >
-                          自动获取
-                        </NButton>
-                      </>
-                    )
-                  } else {
-                    return (
-                      <>
-                        <img
-                          style={{ display: 'block', width: '24px' }}
-                          src={formModel.favicon || icon.dataUrl}
-                        />
-                        <NButton
-                          text
-                          type="error"
-                          style={{ display: 'block' }}
-                          onClick={handleRemoveIcon}
-                        >
-                          {{ icon: () => <Trash /> }}
-                        </NButton>
-                      </>
-                    )
-                  }
-                },
-              }}
-            </NSpace>
+            <IconSetter
+              favicon={formModel.favicon}
+              url={formModel.url}
+              setFavicon={(value) => (formModel.favicon = value)}
+            />
           </NFormItem>
           <NFormItem label="描述" path="description">
             <NInput type="textarea" v-model={[formModel.description, 'value']} />
           </NFormItem>
           <NFormItem label="关联标签" path="tags">
             <NSpace>
-              {tags.value.map((tag) => (
+              {state.tags.map((tag) => (
                 <NTag key={tag.name} checkable v-model={[tag.checked, 'checked']}>
                   {tag.name}
                 </NTag>
