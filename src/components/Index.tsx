@@ -92,7 +92,7 @@ export default defineComponent({
           onTagClick={(tagId) => (currentTagId.value = tagId)}
         />
         <NSpace style={{ margin: '1em 0' }}>
-          <NButton type="primary" onClick={() => openBookmarkModal()}>
+          <NButton type="primary" onClick={() => openBookmarkModal()} ghost>
             {{
               default: () => '添加书签',
               icon: () => (
