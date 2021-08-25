@@ -9,7 +9,7 @@ import BookmarkAPI from '../api/bookmark'
 import { Plus } from '@vicons/tabler'
 import Test from './Test'
 import SearchBox from './SearchBox'
-import store from '../store'
+import classes from '../style/index.module.css'
 
 export default defineComponent({
   setup() {
@@ -59,22 +59,6 @@ export default defineComponent({
 
     watch(() => currentTagId.value, getBookmarks)
 
-    const bookmarksContainer = computed(() => {
-      const base: CSSProperties = { display: 'grid' }
-      if (store.state.isMobile) {
-        return {
-          ...base,
-          gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))',
-          gap: '20px 10px',
-        }
-      }
-      return {
-        ...base,
-        gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))',
-        gap: '30px 50px',
-      }
-    })
-
     return () => (
       <>
         {/* <Test /> */}
@@ -104,7 +88,7 @@ export default defineComponent({
           </NButton>
         </NSpace>
         <NSpin show={loadingBookmarks.value} style={{ minHeight: '50px' }}>
-          <div style={bookmarksContainer.value}>
+          <div class={classes.bookmarkContainer}>
             {bookmarks.value.map((bookmark) => (
               <BookmarkCard
                 key={bookmark.id}

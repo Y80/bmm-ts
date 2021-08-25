@@ -1,8 +1,9 @@
-import { NButton, NCard, NConfigProvider, NIcon, NSpace, NTag, NTooltip } from 'naive-ui'
+import { NButton, NCard, NConfigProvider, NIcon, NTag, NTooltip } from 'naive-ui'
 import { defineComponent, PropType, ref, watchEffect } from 'vue'
 import { Edit, TrashOff, Plus } from '@vicons/tabler'
 import { IBookmark } from '../interface'
-import * as styles from '../styles.css'
+import store from '../store'
+import classes from '../style/bookmark-card.module.css'
 
 export default defineComponent({
   props: {
@@ -31,11 +32,13 @@ export default defineComponent({
       <NConfigProvider
         themeOverrides={{
           Button: { textColorText: '#8f8f8f' },
-          Card: { titleTextColor: '#333' },
+          Card: {
+            paddingMedium: store.state.isMobile ? '5px 7px' : '5px 15px',
+          },
         }}
       >
         <NCard
-          class={styles.bookmarkCard}
+          class={classes.root}
           hoverable
           v-slots={{
             header: () => (
@@ -64,9 +67,10 @@ export default defineComponent({
               </>
             ),
             'header-extra': () => (
-              <NSpace size={[5, 0]} align="center" wrap={false}>
+              <>
                 <NButton
                   text
+                  style="margin-right: 5px"
                   onClick={() => props.onEdit(props.dataSource)}
                   v-slots={{
                     icon: () => (
@@ -87,10 +91,10 @@ export default defineComponent({
                     ),
                   }}
                 />
-              </NSpace>
+              </>
             ),
             default: () => (
-              <NSpace size={[5, 0]} wrap={false} class={styles.tagsBox}>
+              <div class={classes.tagsBox}>
                 {props.dataSource.tags.map((tag) => (
                   <NTag size="small" key={tag.id}>
                     {tag.name}
@@ -110,7 +114,7 @@ export default defineComponent({
                     ),
                   }}
                 </NButton>
-              </NSpace>
+              </div>
             ),
           }}
         />
