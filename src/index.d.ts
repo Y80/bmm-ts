@@ -5,5 +5,6 @@ declare global {
   interface Window {
     $message: MessageApiInjection
     $dialog: DialogApiInjection
+    handleSuccessLogin(): void
   }
 }

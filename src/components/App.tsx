@@ -8,6 +8,7 @@ import {
   zhCN,
 } from 'naive-ui'
 import { defineComponent } from 'vue'
+import { RouterView } from 'vue-router'
 import store from '../store'
 import Index from './Index'
 
@@ -55,18 +56,7 @@ export default defineComponent({
       >
         <NMessageProvider>
           <NDialogProvider>
-            <NLayout>
-              <NLayoutContent
-                contentStyle={{
-                  padding: '10vh 10px 50px 10px',
-                  maxWidth: '1295px',
-                  overflow: 'hidden',
-                  margin: '0 auto',
-                }}
-              >
-                <Index />
-              </NLayoutContent>
-            </NLayout>
+            <RouterView />
           </NDialogProvider>
         </NMessageProvider>
       </NConfigProvider>

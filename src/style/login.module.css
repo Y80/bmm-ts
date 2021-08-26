@@ -1,0 +1,11 @@
+.root {
+  width: 500px;
+  background-color: white;
+  margin: 0 auto;
+  height: 300px;
+  transform: translateY(calc(50vh - 100%));
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
