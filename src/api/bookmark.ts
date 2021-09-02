@@ -1,5 +1,5 @@
 import { IBaseBookmark, IBookmark } from '../interface'
-import http from './http'
+import { http } from './http'
 
 export function add(payload: IBaseBookmark & { tagIds: number[] }) {
   return http.post('/bookmark', payload)

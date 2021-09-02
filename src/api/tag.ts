@@ -1,5 +1,5 @@
 import { ITag } from '../interface'
-import http from './http'
+import { http } from './http'
 
 export function add(payload: any) {
   return http.post('/tag', payload)

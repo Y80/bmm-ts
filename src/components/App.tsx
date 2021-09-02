@@ -2,23 +2,26 @@ import {
   dateZhCN,
   NConfigProvider,
   NDialogProvider,
-  NLayout,
-  NLayoutContent,
   NMessageProvider,
+  useDialog,
+  useMessage,
   zhCN,
 } from 'naive-ui'
 import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
-import store from '../store'
-import Index from './Index'
+
+const MyRouterView = defineComponent({
+  setup() {
+    window.$dialog = useDialog()
+    window.$message = useMessage()
+
+    return () => <RouterView />
+  },
+})
 
 export default defineComponent({
   setup() {
-    store.dispatch('getAllTags')
-  },
-
-  render() {
-    return (
+    return () => (
       <NConfigProvider
         locale={zhCN}
         dateLocale={dateZhCN}
@@ -56,7 +59,7 @@ export default defineComponent({
       >
         <NMessageProvider>
           <NDialogProvider>
-            <RouterView />
+            <MyRouterView />
           </NDialogProvider>
         </NMessageProvider>
       </NConfigProvider>

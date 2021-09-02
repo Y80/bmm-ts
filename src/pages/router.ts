@@ -1,7 +1,7 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 export default createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes: [
     // 在 / 页面里处理 ?code= 的情况
     { path: '/', component: () => import('./Root') },

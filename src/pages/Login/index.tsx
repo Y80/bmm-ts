@@ -1,33 +1,26 @@
 import { NButton } from 'naive-ui'
 import classes from '../../style/login.module.css'
-
-// #/login
-// --->github.com/login/auth
-// --->/?code=231asfadfaf
-//  (window.opener.handleSuccessLogin(); window.close();)
+import router from '../router'
 
 // https://docs.github.com/en/developers/apps/building-oauth-apps/authorizing-oauth-apps#web-application-flow
 
 export default function Login() {
+  /**
+   * 1. 打开新窗口，进行 GitHub 授权
+   * 2. 授权成功，重定向至 REDIRECT_URI
+   * 3. 在 REDIRECT_URI 页面中请求服务端，请求签发 token
+   * 4. 新窗口调用 handleSuccessLogin(), 新窗口被关闭，当前窗口导航至 /admin
+   */
   function handleClick() {
+    const REDIRECT_URI = 'http://localhost:3000'
+    const CLIENT_ID = 'e2694ff6d268a2124f44'
     const childWindow = window.open(
-      'https://github.com/login/oauth/authorize?client_id=e2694ff6d268a2124f44&redirect_uri=http://localhost:3000'
+      `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`
     )
-
-    if (!childWindow) {
-      alert('null')
-      return
+    window.handleSuccessLogin = () => {
+      childWindow?.close()
+      router.replace('/admin')
     }
-
-    childWindow.addEventListener('loadstart', () => {
-      console.log('load')
-      console.log(childWindow.location.href)
-    })
-
-    childWindow.addEventListener('unload', () => {
-      console.log('unload')
-      console.log(childWindow.location.href)
-    })
   }
 
   return (
@@ -38,3 +31,5 @@ export default function Login() {
     </div>
   )
 }
+
+Login.displayName = 'Login'

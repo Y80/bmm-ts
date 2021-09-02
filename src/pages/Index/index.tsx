@@ -1,22 +1,13 @@
 import { defineComponent } from 'vue'
-import { NLayout, NLayoutContent } from 'naive-ui'
-import Index from '../../components/Index'
+import Layout from '../../components/Layout'
 
 export default defineComponent({
   setup() {
     return () => (
-      <NLayout>
-        <NLayoutContent
-          contentStyle={{
-            padding: '10vh 10px 50px 10px',
-            maxWidth: '1295px',
-            overflow: 'hidden',
-            margin: '0 auto',
-          }}
-        >
-          <Index />
-        </NLayoutContent>
-      </NLayout>
+      <Layout>
+        <p>index 页面</p>
+        <p>TODO: 展示游客可见的书签</p>
+      </Layout>
     )
   },
 })
