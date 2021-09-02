@@ -1,7 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import router from '../pages/router'
 
-const axiosInstance = axios.create({ baseURL: 'http://localhost:7890/bmm' })
+const axiosInstance = axios.create({ baseURL: import.meta.env.VITE_SERVER_BASEURL })
 axiosInstance.interceptors.request.use((request) => {
   request.headers ||= {}
   request.headers.authorization = `Bearer ${localStorage.getItem('token') || ''}`
